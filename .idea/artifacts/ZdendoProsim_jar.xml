@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="ZdendoProsim:jar">
+    <output-path>$PROJECT_DIR$</output-path>
+    <root id="archive" name="ZdendoPlsV2.jar">
+      <element id="module-output" name="ZdendoPlsV2" />
+      <element id="directory" name="images">
+        <element id="dir-copy" path="$PROJECT_DIR$/images" />
+      </element>
+      <element id="directory" name="sounds">
+        <element id="dir-copy" path="$PROJECT_DIR$/sounds" />
+      </element>
+    </root>
+  </artifact>
+</component>

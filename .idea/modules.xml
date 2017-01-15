@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/ZdendoPlsV2.iml" filepath="$PROJECT_DIR$/ZdendoPlsV2.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ZdendoPls.iml" filepath="$PROJECT_DIR$/.idea/modules/ZdendoPls.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ZdendoPls_main.iml" filepath="$PROJECT_DIR$/.idea/modules/ZdendoPls_main.iml" group="ZdendoPls" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ZdendoPls_test.iml" filepath="$PROJECT_DIR$/.idea/modules/ZdendoPls_test.iml" group="ZdendoPls" />
     </modules>
   </component>
 </project>

@@ -22,4 +22,5 @@ jfx {
     vendor = 'Petr Kraus'
     additionalAppResources = 'src/main/resources'
     jfxMainAppJarName = "blbost.jar"
+    copyAdditionalAppResourcesToJar = true
 }

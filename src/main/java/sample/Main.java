@@ -24,9 +24,9 @@ public class Main extends Application {
     private int id = 3;
 
     private void loadSounds() {
-        File tmp = new File(new File("").getAbsolutePath() + "/sounds");
-        System.out.println(tmp.getAbsolutePath());
-        File[] listOfFiles = new File(tmp.getPath()).listFiles();
+        //File tmp = new File(new File("").getAbsolutePath() + "/sounds");
+        //System.out.println(tmp.getAbsolutePath());
+        File[] listOfFiles = new File(getClass().getResource("/sounds").getPath()).listFiles();
         assert(listOfFiles != null);
 
         Arrays.stream(listOfFiles)
@@ -43,7 +43,8 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception{
         loadSounds();
-        String image = new File("images/zdendoPls4.png").getPath();
+        //String image = new File("images/zdendoPls4.png").getPath();
+        String image = getClass().getResource("/images/zdendoPls4.png").toExternalForm();
         Parent root = new StackPane();
         ImagePattern img = new ImagePattern(new Image(image));
         Scene scene = new Scene(root, 300, 275);
@@ -56,7 +57,7 @@ public class Main extends Application {
                 } while (temp == id);
                 id = temp;
 
-                Media media = new Media(Main.this.sounds.get(id).getPath());
+                Media media = new Media(Main.this.sounds.get(id).toExternalForm());
                 MediaPlayer mediaPlayer = new MediaPlayer(media);
                 mediaPlayer.play();
             } catch (Exception e) {

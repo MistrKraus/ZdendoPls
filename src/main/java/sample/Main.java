@@ -31,29 +31,16 @@ public class Main extends Application {
         }
 
         // Lets stream the jar file
-        JarInputStream jarInputStream = null;
-        try {
-            jarInputStream = new JarInputStream(new FileInputStream(file));
-            JarEntry jarEntry;
-
-            // Iterate the jar entries within that jar. Then make sure it follows the
-            // filter given from the user.
-            do {
-                jarEntry = jarInputStream.getNextJarEntry();
-                if (jarEntry != null) {
-                    String fileName = jarEntry.getName();
-
-                    // The filter could be null or has a matching regular expression.
-                    if (filter == null || fileName.matches(filter)) {
-                        files.add("/" + fileName);
-                    }
+        try (JarInputStream jarInputStream = new JarInputStream(new FileInputStream(file))) {
+            JarEntry jarEntry = jarInputStream.getNextJarEntry();
+            while(jarEntry != null) {
+                String fileName = jarEntry.getName();
+                if (filter == null || fileName.matches(filter)) {
+                    files.add("/" + fileName);
                 }
             }
-            while (jarEntry != null);
-            jarInputStream.close();
-        }
-        catch (IOException ioe) {
-            throw new RuntimeException("Unable to get Jar input stream from '" + file + "'", ioe);
+        } catch (IOException ex) {
+            throw new RuntimeException("Unable to get Jar input stream from '" + file + "'", ex);
         }
         return files;
     }

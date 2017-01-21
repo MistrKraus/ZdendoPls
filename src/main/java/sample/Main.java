@@ -1,52 +1,74 @@
 package sample;
 
-import javafx.application.Application;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.image.Image;
-import javafx.scene.layout.StackPane;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
-import javafx.scene.paint.ImagePattern;
-import javafx.stage.Stage;
-
-import java.io.File;
-import java.net.URL;
+import java.awt.image.BufferedImage;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.jar.JarEntry;
+import java.util.jar.JarInputStream;
+import javafx.application.Application;
+import javafx.embed.swing.SwingFXUtils;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.layout.StackPane;
+import javafx.scene.media.AudioClip;
+import javafx.scene.paint.ImagePattern;
+import javafx.stage.Stage;
+import javax.imageio.ImageIO;
 
 public class Main extends Application {
 
-    private List<URL> sounds = new ArrayList<>();
+    private List<String> sounds = new ArrayList<>();
     private Random random = new Random();
     private int id = 3;
 
-    private void loadSounds() {
-        //File tmp = new File(new File("").getAbsolutePath() + "/sounds");
-        //System.out.println(tmp.getAbsolutePath());
-        File[] listOfFiles = new File(getClass().getResource("/sounds").getPath()).listFiles();
-        assert(listOfFiles != null);
+    private static List<String> getJarFileListing(String file, String filter) {
+        List<String> files = new ArrayList<>();
+        if (file == null) {
+            return files; // Empty.
+        }
 
-        Arrays.stream(listOfFiles)
-                .filter(file -> file.getName().endsWith(".wav"))
-                .forEach(file -> {
-                    try {
-                        sounds.add(new URL("file:" + file.getPath()));
-                    } catch (Exception e) {
-                        System.out.println("Chyba pri cteni souboru!");
+        // Lets stream the jar file
+        JarInputStream jarInputStream = null;
+        try {
+            jarInputStream = new JarInputStream(new FileInputStream(file));
+            JarEntry jarEntry;
+
+            // Iterate the jar entries within that jar. Then make sure it follows the
+            // filter given from the user.
+            do {
+                jarEntry = jarInputStream.getNextJarEntry();
+                if (jarEntry != null) {
+                    String fileName = jarEntry.getName();
+
+                    // The filter could be null or has a matching regular expression.
+                    if (filter == null || fileName.matches(filter)) {
+                        files.add("/" + fileName);
                     }
-                });
+                }
+            }
+            while (jarEntry != null);
+            jarInputStream.close();
+        }
+        catch (IOException ioe) {
+            throw new RuntimeException("Unable to get Jar input stream from '" + file + "'", ioe);
+        }
+        return files;
+    }
+
+    private void loadSounds() {
+        String path = getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
+        sounds = getJarFileListing(path, "^sounds/(.*).wav$");
     }
 
     @Override
     public void start(Stage primaryStage) throws Exception{
         loadSounds();
-        //String image = new File("images/zdendoPls4.png").getPath();
-        String image = getClass().getResource("/images/zdendoPls4.png").toExternalForm();
+        BufferedImage bufferedImage = ImageIO.read(getClass().getResourceAsStream("/images/zdendoPls4.png"));
         Parent root = new StackPane();
-        ImagePattern img = new ImagePattern(new Image(image));
+        ImagePattern img = new ImagePattern(SwingFXUtils.toFXImage(bufferedImage, null));
         Scene scene = new Scene(root, 300, 275);
         scene.setFill(img);
         scene.setOnMouseClicked(event -> {
@@ -57,9 +79,10 @@ public class Main extends Application {
                 } while (temp == id);
                 id = temp;
 
-                Media media = new Media(Main.this.sounds.get(id).toExternalForm());
-                MediaPlayer mediaPlayer = new MediaPlayer(media);
-                mediaPlayer.play();
+                String source = sounds.get(id);
+                String url = getClass().getResource(source).toExternalForm();
+                AudioClip audioClip = new AudioClip(url);
+                audioClip.play();
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }

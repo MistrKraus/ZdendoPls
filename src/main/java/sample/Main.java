@@ -22,6 +22,7 @@ public class Main extends Application {
 
     private List<String> sounds = new ArrayList<>();
     private Random random = new Random();
+    private boolean bgIsDefault;
     private int id = 3;
 
     private static List<String> getJarFileListing(String file, String filter) {
@@ -38,6 +39,8 @@ public class Main extends Application {
                 if (filter == null || fileName.matches(filter)) {
                     files.add("/" + fileName);
                 }
+
+                jarEntry = jarInputStream.getNextJarEntry();
             }
         } catch (IOException ex) {
             throw new RuntimeException("Unable to get Jar input stream from '" + file + "'", ex);
@@ -53,25 +56,48 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception{
         loadSounds();
-        BufferedImage bufferedImage = ImageIO.read(getClass().getResourceAsStream("/images/zdendoPls4.png"));
-        Parent root = new StackPane();
-        ImagePattern img = new ImagePattern(SwingFXUtils.toFXImage(bufferedImage, null));
-        Scene scene = new Scene(root, 300, 275);
-        scene.setFill(img);
-        scene.setOnMouseClicked(event -> {
-            try {
-                int temp = Main.this.sounds.size();
-                do {
-                    temp = random.nextInt(temp);
-                } while (temp == id);
-                id = temp;
 
-                String source = sounds.get(id);
-                String url = getClass().getResource(source).toExternalForm();
-                AudioClip audioClip = new AudioClip(url);
-                audioClip.play();
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
+        ImagePattern[] img = new ImagePattern[2];
+        BufferedImage bufferedImage = ImageIO.read(getClass().getResourceAsStream("/images/default.png"));
+        img[0] = new ImagePattern(SwingFXUtils.toFXImage(bufferedImage, null));
+        bufferedImage = ImageIO.read(getClass().getResourceAsStream("/images/selected.png"));
+        img[1] = new ImagePattern(SwingFXUtils.toFXImage(bufferedImage, null));
+
+        Parent root = new StackPane();
+
+        Scene scene = new Scene(root, 300, 275);
+        scene.setFill(img[0]);
+        bgIsDefault = true;
+
+        scene.setOnMouseClicked(event -> {
+            if (mouseInRadius(scene))
+                try {
+                    int temp = Main.this.sounds.size();
+                    do {
+                        temp = random.nextInt(temp);
+                    } while (temp == id);
+                    id = temp;
+
+                    String source = sounds.get(id);
+                    String url = getClass().getResource(source).toExternalForm();
+                    AudioClip audioClip = new AudioClip(url);
+                    audioClip.play();
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
+        });
+
+        scene.setOnMouseMoved(event -> {
+            if (mouseInRadius(scene)) {
+                if (bgIsDefault) {
+                    scene.setFill(img[1]);
+                    bgIsDefault = false;
+                }
+            } else {
+                if (!bgIsDefault) {
+                    scene.setFill(img[0]);
+                    bgIsDefault = true;
+                }
             }
         });
 
@@ -80,6 +106,12 @@ public class Main extends Application {
         primaryStage.show();
     }
 
+    private boolean mouseInRadius(Scene scene) {
+        if ((scene.getY() > (20 * scene.getHeight()) / 275) && (scene.getY() < (110 * scene.getHeight()) / 275) &&
+                (scene.getX() > (20 * scene.getWidth()) / 300) && (scene.getX() < (280 * scene.getWidth()) / 300))
+            return true;
+        return false;
+    }
 
     public static void main(String[] args) {
         launch(args);

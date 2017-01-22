@@ -70,7 +70,7 @@ public class Main extends Application {
         bgIsDefault = true;
 
         scene.setOnMouseClicked(event -> {
-            if (mouseInRadius(scene))
+            if (mouseInRadius(event.getX(), event.getY(), scene))
                 try {
                     int temp = Main.this.sounds.size();
                     do {
@@ -88,7 +88,7 @@ public class Main extends Application {
         });
 
         scene.setOnMouseMoved(event -> {
-            if (mouseInRadius(scene)) {
+            if (mouseInRadius(event.getX(), event.getY(), scene)) {
                 if (bgIsDefault) {
                     scene.setFill(img[1]);
                     bgIsDefault = false;
@@ -106,9 +106,9 @@ public class Main extends Application {
         primaryStage.show();
     }
 
-    private boolean mouseInRadius(Scene scene) {
-        if ((scene.getY() > (20 * scene.getHeight()) / 275) && (scene.getY() < (110 * scene.getHeight()) / 275) &&
-                (scene.getX() > (20 * scene.getWidth()) / 300) && (scene.getX() < (280 * scene.getWidth()) / 300))
+    private boolean mouseInRadius(double x, double y,Scene scene) {
+        if ((y > (20 * scene.getHeight()) / 275) && (y < (110 * scene.getHeight()) / 275) &&
+                (x > (20 * scene.getWidth()) / 300) && (x < (280 * scene.getWidth()) / 300))
             return true;
         return false;
     }
